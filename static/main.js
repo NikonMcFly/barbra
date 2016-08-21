@@ -12,6 +12,7 @@
 
   function line (cnvs) {
     cnvs.beginPath()
+    // The +2 in this function is to fix a bug where the line starts before where the mose is positioned
     cnvs.moveTo(startPos.x + 2, startPos.y)
     cnvs.lineTo(finalPos.x, finalPos.y)
     cnvs.stroke()
@@ -52,6 +53,8 @@
     ctx.lineWidth = 1
     ctx.lineCap = 'square'
     ctx.beginPath()
+
+    // The -1 in this function is to fix a bug where the line starts before where the mose is positioned
     startPos = { x: e.pageX - canvasOffset.left - 1, y: e.pageY - canvasOffset.top}
   })
 
@@ -64,4 +67,6 @@
     startPos = {x: 0, y: 0}
     drawLine = false
   })
+
+  ajax.get('/healthz', null, function(data) { console.log(data)});
 })()

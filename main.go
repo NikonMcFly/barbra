@@ -9,12 +9,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// HealthzHandler ...
+func HealthzHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Server is running...\n"))
+}
+
 func main() {
 	var dir string
 
 	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
 	flag.Parse()
 	r := mux.NewRouter()
+	r.HandleFunc("/healthz", HealthzHandler)
 
 	// This will serve files under http://localhost:8000<filename>
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./static"))))
