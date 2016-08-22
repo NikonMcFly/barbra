@@ -35,7 +35,7 @@ ajax.send = function (url, callback, method, data, async) {
         }
     };
     if (method == 'POST') {
-        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        x.setRequestHeader('Content-Type', 'application/json');
     }
     x.send(data)
 };
