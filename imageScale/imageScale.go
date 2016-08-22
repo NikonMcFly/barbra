@@ -12,7 +12,7 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-func imageScale() {
+func main() {
 	img, err := GetPng("./images/University of Houston Logo.png")
 	if err != nil {
 		log.Fatal(err)
