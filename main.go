@@ -10,47 +10,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/pieperz/barbra/imageScale"
-	"golang.org/x/exp/shiny/unit"
+	"github.com/pieperz/barbra/imageScaler"
 )
-
-type point struct {
-	X int `json:"x"`
-	Y int `json:"y"`
-}
-
-type line struct {
-	Start *point `json:"start"`
-	End   *point `json:"end"`
-}
-
-// Scale ...
-type Scale struct {
-	Line   *line   `json:"line"`
-	Length float64 `json:"length"`
-}
-
-func newPoint() *point {
-	return &point{
-		X: 0,
-		Y: 0,
-	}
-}
-
-func newLine() *line {
-	return &line{
-		Start: newPoint(),
-		End:   newPoint(),
-	}
-}
-
-// NewScale ...
-func NewScale() *Scale {
-	return &Scale{
-		Line:   newLine(),
-		Length: 0,
-	}
-}
 
 // HealthzHandler ...
 func HealthzHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +21,8 @@ func HealthzHandler(w http.ResponseWriter, r *http.Request) {
 // ResizeHandler ...
 func ResizeHandler(w http.ResponseWriter, req *http.Request) {
 
-	scale := NewScale()
+	scale := imageScaler.NewTransformation()
+	scale.Axis = "x"
 
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&scale)
@@ -69,15 +31,9 @@ func ResizeHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// TODO: Allow user to upload there own image form the static site
-	img, _ := imageScale.GetPng("./static/images/University of Houston Logo.png")
+	img, _ := imageScaler.GetPng("./static/images/University of Houston Logo.png")
 
-	// TODO: Add this to the strut as methods
-	pixelScale := unit.Pixels(float64(scale.Line.End.X - scale.Line.Start.X))
-	knownLength := unit.Inches(float64(scale.Length))
-	// TODO: add Axis
-
-	// TODO just pass in a Scale Oject
-	scaledImg, err := imageScale.ScaleImage(img, pixelScale, knownLength, "x")
+	scaledImg, err := imageScaler.NewScale(img, scale)
 	if err != nil {
 		log.Fatal(err)
 	}

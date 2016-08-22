@@ -1,10 +1,9 @@
-package imageScale
+package imageScaler
 
 import (
 	"errors"
 	"image"
 	"image/png"
-	"log"
 	"os"
 
 	"github.com/nfnt/resize"
@@ -12,51 +11,30 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-func main() {
-	img, err := GetPng("./images/University of Houston Logo.png")
-	if err != nil {
-		log.Fatal(err)
-	}
+// NewScale ...
+func NewScale(img image.Image, scale *Scale) (image.Image, error) {
+	if scale.Pixels().F == 0 {
 
-	pixelScale := unit.Pixels(144)
-	knownLength := unit.Inches(4)
+		// TODO: I should be able to refactor this out
+		c := unit.Converter(Default)
+		got := c.Convert(scale.KnownLength(), unit.Px)
 
-	m, _ := ScaleImage(img, pixelScale, knownLength, "x")
-
-	out, err := os.Create("test_reszied.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer out.Close()
-
-	png.Encode(out, m)
-
-}
-
-// ScaleImage ...
-func ScaleImage(img image.Image, pixelScale unit.Value, knownLength unit.Value, axis string) (image.Image, error) {
-
-	c := unit.Converter(Default)
-	knownPixelLength := c.Convert(knownLength, unit.Px)
-
-	if pixelScale.F == 0 {
-		if axis == "x" {
-			return resize.Resize(uint(knownPixelLength.F), 0, img, resize.Lanczos3), nil
-		} else if axis == "y" {
-			return resize.Resize(0, uint(knownPixelLength.F), img, resize.Lanczos3), nil
+		if scale.Axis == "x" {
+			return resize.Resize(uint(got.F), 0, img, resize.Lanczos3), nil
+		} else if scale.Axis == "y" {
+			return resize.Resize(0, uint(got.F), img, resize.Lanczos3), nil
 		}
+
 	} else {
 
 		// The pixelScale is either in the x or the y axis because it is a vertical or horizontal line
 		// I beleve that we cold handle lines drawn at any angle using the Pythagorean theorem
 
-		mutiplyer := (pixelScale.F / knownPixelLength.F)
-
-		if axis == "x" {
-			xLength := float64(img.Bounds().Dx()) / mutiplyer
+		if scale.Axis == "x" {
+			xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
 			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
-		} else if axis == "y" {
-			yLength := float64(img.Bounds().Dy()) / mutiplyer
+		} else if scale.Axis == "y" {
+			yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
 			return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
 		}
 	}

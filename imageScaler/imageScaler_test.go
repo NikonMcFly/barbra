@@ -1,20 +1,20 @@
-package imageScale_test
+package imageScaler_test
 
 import (
 	"image"
 	_ "image/png"
 
+	"golang.org/x/exp/shiny/unit"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/pieperz/barbra/imageScale"
-	"golang.org/x/exp/shiny/unit"
+	. "github.com/pieperz/barbra/imageScaler"
 )
 
-var _ = Describe("ImageScale", func() {
+var _ = Describe("ImageScaler", func() {
 	var (
-		testImage   image.Image
-		pixelScale  unit.Value
-		knownLength unit.Value
+		testImage image.Image
+		scale     *Scale
 	)
 
 	BeforeEach(func() {
@@ -26,20 +26,21 @@ var _ = Describe("ImageScale", func() {
 		Context("with Pixel Scale set to 0", func() {
 
 			BeforeEach(func() {
-				pixelScale = unit.Pixels(0)
-				knownLength = unit.Inches(3)
+				scale = NewTransformation()
+				scale.Length = 3
 			})
 
 			It("should resize a photo to a given width", func() {
-
-				axis := "x"
-				scaledImg, err := ScaleImage(testImage, pixelScale, knownLength, axis)
+				scale.Line.Start.X = 0
+				scale.Line.End.X = 0
+				scale.Axis = "x"
+				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
 
 				bounds := scaledImg.Bounds()
 				c := unit.Converter(Default)
-				got := c.Convert(knownLength, unit.Px)
+				got := c.Convert(scale.KnownLength(), unit.Px)
 
 				Ω(float64(bounds.Dx())).Should(Equal(got.F))
 
@@ -47,14 +48,16 @@ var _ = Describe("ImageScale", func() {
 
 			It("should resize a photo to a given height", func() {
 
-				axis := "y"
-				scaledImg, err := ScaleImage(testImage, pixelScale, knownLength, axis)
+				scale.Line.Start.Y = 0
+				scale.Line.End.Y = 0
+				scale.Axis = "y"
+				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
 
 				bounds := scaledImg.Bounds()
 				c := unit.Converter(Default)
-				got := c.Convert(knownLength, unit.Px)
+				got := c.Convert(scale.KnownLength(), unit.Px)
 
 				Ω(float64(bounds.Dy())).Should(Equal(got.F))
 			})
@@ -65,14 +68,15 @@ var _ = Describe("ImageScale", func() {
 			Context("that is larger than the base image", func() {
 
 				BeforeEach(func() {
-					pixelScale = unit.Pixels(144)
-					knownLength = unit.Inches(4)
+					scale = NewTransformation()
+					scale.Length = 4
 				})
 
 				It("should scale up with a horozontal (x) pixel scale and known measuremnt", func() {
-
-					axis := "x"
-					scaledImg, err := ScaleImage(testImage, pixelScale, knownLength, axis)
+					scale.Line.Start.X = 0
+					scale.Line.End.X = 144
+					scale.Axis = "x"
+					scaledImg, err := NewScale(testImage, scale)
 
 					Ω(err).ShouldNot(HaveOccurred())
 
@@ -81,9 +85,10 @@ var _ = Describe("ImageScale", func() {
 				})
 
 				It("should scale up with a vertical (y) pixel scale and known measuremnt", func() {
-
-					axis := "y"
-					scaledImg, err := ScaleImage(testImage, pixelScale, knownLength, axis)
+					scale.Line.Start.Y = 0
+					scale.Line.End.Y = 144
+					scale.Axis = "y"
+					scaledImg, err := NewScale(testImage, scale)
 
 					Ω(err).ShouldNot(HaveOccurred())
 
@@ -96,14 +101,16 @@ var _ = Describe("ImageScale", func() {
 		Context("that is smaller than the base image", func() {
 
 			BeforeEach(func() {
-				pixelScale = unit.Pixels(144)
-				knownLength = unit.Inches(1)
+				scale = NewTransformation()
+				scale.Length = 1
 			})
 
 			It("should scale down with a horozontal (x) pixel scale and known measuremnt", func() {
 
-				axis := "x"
-				scaledImg, err := ScaleImage(testImage, pixelScale, knownLength, axis)
+				scale.Line.Start.X = 0
+				scale.Line.End.X = 144
+				scale.Axis = "x"
+				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
 
@@ -113,8 +120,10 @@ var _ = Describe("ImageScale", func() {
 
 			It("should scale down with a vertical (y) pixel scale and known measuremnt", func() {
 
-				axis := "y"
-				scaledImg, err := ScaleImage(testImage, pixelScale, knownLength, axis)
+				scale.Line.Start.Y = 0
+				scale.Line.End.Y = 144
+				scale.Axis = "y"
+				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
 

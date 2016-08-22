@@ -1,4 +1,4 @@
-package imageScale_test
+package imageScaler_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestImageScale(t *testing.T) {
+func TestImageScaler(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "ImageScale Suite")
+	RunSpecs(t, "ImageScaler Suite")
 }
