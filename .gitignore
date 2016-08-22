@@ -8,3 +8,6 @@ barbra
 debug
 
 static/images/resized*
+
+*coverage.out
+*.coverprofile
