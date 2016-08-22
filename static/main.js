@@ -66,21 +66,21 @@
     clearCanvas()
     // Replace with var that is second canvas
     line(ctx)
-    endPos = {x: 0, y: 0}
-    startPos = {x: 0, y: 0}
     drawLine = false
   })
 
   document.getElementById('resize').addEventListener('click', function () {
-    var post = { 
+    var post = {
+      length: Number(document.getElementById('length').value),
       line: {
-        start: startPos, 
-        end: endPos,
-      },
-      length: document.getElementById("length").value
+        start: startPos,
+        end: endPos
+      }
     }
-    console.log('Post: ', post)
-    ajax.post('/resize', JSON.stringify(post), function (data) {console.log(data)})
+
+    ajax.send('/resize', function () {
+      document.getElementById("myImage").src = './images/resized_University of Houston Logo.png?' + new Date().getTime()
+    }, 'post', JSON.stringify(post))
   }, false)
 
   ajax.get('/healthz', null, function (data) { console.log(data)})
