@@ -27,15 +27,20 @@ func NewScale(img image.Image, scale *Scale) (image.Image, error) {
 
 	} else {
 
-		// The pixelScale is either in the x or the y axis because it is a vertical or horizontal line
-		// I beleve that we cold handle lines drawn at any angle using the Pythagorean theorem
+		if scale.isSingleAxis() {
 
-		if scale.Axis == "x" {
-			xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
+			if scale.Axis == "x" {
+				xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
+				return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
+			} else if scale.Axis == "y" {
+				yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
+				return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
+			}
+
+		} else {
+			xyMultiplyer := scale.getHypotenusePixels().F / float64(img.Bounds().Dx())
+			xLength := float64(scale.getHypotenusePixels().F) / xyMultiplyer
 			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
-		} else if scale.Axis == "y" {
-			yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
-			return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
 		}
 	}
 
