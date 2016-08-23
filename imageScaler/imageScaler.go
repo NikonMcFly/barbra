@@ -13,35 +13,34 @@ import (
 
 // NewScale ...
 func NewScale(img image.Image, scale *Scale) (image.Image, error) {
-	if scale.Pixels().F == 0 {
 
-		// TODO: I should be able to refactor this out
-		c := unit.Converter(Default)
-		got := c.Convert(scale.KnownLength(), unit.Px)
+	if scale.isSingleAxis() {
+		if scale.Pixels().F == 0 {
+
+			// TODO: I should be able to refactor this out
+			c := unit.Converter(Default)
+			got := c.Convert(scale.KnownLength(), unit.Px)
+
+			if scale.Axis == "x" {
+				return resize.Resize(uint(got.F), 0, img, resize.Lanczos3), nil
+			} else if scale.Axis == "y" {
+				return resize.Resize(0, uint(got.F), img, resize.Lanczos3), nil
+			}
+
+		}
 
 		if scale.Axis == "x" {
-			return resize.Resize(uint(got.F), 0, img, resize.Lanczos3), nil
+			xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
+			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
 		} else if scale.Axis == "y" {
-			return resize.Resize(0, uint(got.F), img, resize.Lanczos3), nil
+			yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
+			return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
 		}
 
 	} else {
-
-		if scale.isSingleAxis() {
-
-			if scale.Axis == "x" {
-				xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
-				return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
-			} else if scale.Axis == "y" {
-				yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
-				return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
-			}
-
-		} else {
-			xyMultiplyer := scale.getHypotenusePixels().F / float64(img.Bounds().Dx())
-			xLength := float64(scale.getHypotenusePixels().F) / xyMultiplyer
-			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
-		}
+		xyMultiplyer := scale.getHypotenusePixels().F / float64(img.Bounds().Dx())
+		xLength := float64(scale.getHypotenusePixels().F) / xyMultiplyer
+		return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
 	}
 
 	return nil, errors.New("axis is not supported")
