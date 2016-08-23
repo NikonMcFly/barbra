@@ -33,7 +33,8 @@ func NewScale(img image.Image, scale *Scale) (image.Image, error) {
 	} else {
 		// MultiAxis
 		xyMultiplyer := scale.getHypotenusePixels().F / float64(img.Bounds().Dx())
-		xLength := float64(scale.getHypotenusePixels().F) / xyMultiplyer
+		hypot := scale.getHypotenusePixels()
+		xLength := hypot.F / xyMultiplyer
 		return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
 	}
 
