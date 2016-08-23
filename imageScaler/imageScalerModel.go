@@ -11,6 +11,8 @@ const (
 	XAxis = "x"
 	// YAxis ...
 	YAxis = "y"
+	// MultiAxis
+	MultiAxis = "xy"
 )
 
 type point struct {
@@ -61,6 +63,11 @@ func (s *Scale) Mutiplyer() float64 {
 
 	c := unit.Converter(Default)
 	knownPixelLength := c.Convert(s.KnownLength(), unit.Px)
+
+	if s.Pixels().F == 0 {
+		return 1
+	}
+
 	return s.Pixels().F / knownPixelLength.F
 }
 
@@ -82,15 +89,32 @@ func (s *Scale) KnownLength() unit.Value {
 }
 
 func (s *Scale) isSingleAxis() bool {
+	if s.getAxis() == MultiAxis {
+		return false
+	}
+	return true
+	// if s.Line.Start.X == s.Line.End.X {
+	// 	return true
+	// }
+
+	// if s.Line.Start.Y == s.Line.End.Y {
+	// 	return true
+	// }
+
+	// return false
+}
+
+func (s *Scale) getAxis() string {
+
 	if s.Line.Start.X == s.Line.End.X {
-		return true
+		return XAxis
 	}
 
 	if s.Line.Start.Y == s.Line.End.Y {
-		return true
+		return YAxis
 	}
 
-	return false
+	return MultiAxis
 }
 
 func (s *Scale) getHypotenusePixels() unit.Value {
