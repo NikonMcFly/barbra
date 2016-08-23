@@ -29,7 +29,6 @@ type line struct {
 type Scale struct {
 	Line   *line   `json:"line"`
 	Length float64 `json:"length"`
-	Axis   string
 }
 
 func newPoint() *point {
@@ -57,10 +56,6 @@ func NewTransformation() *Scale {
 // Mutiplyer ...
 func (s *Scale) Mutiplyer() float64 {
 
-	// if !s.isSingleAxis() {
-	// 	return s.getHypotenusePixels().F / s.KnownLength().F
-	// }
-
 	c := unit.Converter(Default)
 	knownPixelLength := c.Convert(s.KnownLength(), unit.Px)
 
@@ -74,7 +69,7 @@ func (s *Scale) Mutiplyer() float64 {
 // Pixels  returns the end point of the line
 func (s *Scale) Pixels() unit.Value {
 
-	if s.Axis == XAxis || !s.isSingleAxis() {
+	if s.getAxis() == XAxis || s.isSingleAxis() {
 		return unit.Pixels(s.Line.End.X - s.Line.Start.X)
 	}
 
@@ -93,25 +88,16 @@ func (s *Scale) isSingleAxis() bool {
 		return false
 	}
 	return true
-	// if s.Line.Start.X == s.Line.End.X {
-	// 	return true
-	// }
-
-	// if s.Line.Start.Y == s.Line.End.Y {
-	// 	return true
-	// }
-
-	// return false
 }
 
 func (s *Scale) getAxis() string {
 
 	if s.Line.Start.X == s.Line.End.X {
-		return XAxis
+		return YAxis
 	}
 
 	if s.Line.Start.Y == s.Line.End.Y {
-		return YAxis
+		return XAxis
 	}
 
 	return MultiAxis

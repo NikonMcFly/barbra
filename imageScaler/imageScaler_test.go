@@ -15,61 +15,12 @@ var _ = Describe("ImageScaler", func() {
 		scale     *Scale
 	)
 
-	BeforeEach(func() {
-		testImage, _ = GetPng("./../static/images/University of Houston Logo.png")
-	})
+	Context("resizing a photo", func() {
 
-	Context("resizing a photo with bad data", func() {
-
-		Context("with default scale values", func() {
-
-			BeforeEach(func() {
-				scale = NewTransformation()
-				scale.Length = 0
-				scale.Line.Start.X = 0
-				scale.Line.End.X = 0
-				scale.Line.Start.Y = 0
-				scale.Line.End.Y = 0
-			})
-
-			It("should not change the photo in the x scale", func() {
-
-				_, err := NewScale(testImage, scale)
-
-				Ω(err).To(HaveOccurred())
-
-			})
-			Context("with Pixel Scale set to 0", func() {
-
-				BeforeEach(func() {
-					scale = NewTransformation()
-					scale.Length = 4
-					scale.Line.Start.Y = 0
-					scale.Line.End.Y = 0
-					scale.Line.Start.X = 0
-					scale.Line.End.X = 0
-				})
-
-				It("should return an error", func() {
-
-					_, err := NewScale(testImage, scale)
-
-					Ω(err).To(HaveOccurred())
-				})
-
-				It("should return an error", func() {
-
-					_, err := NewScale(testImage, scale)
-
-					Ω(err).To(HaveOccurred())
-				})
-
-			})
-
+		BeforeEach(func() {
+			testImage, _ = GetPng("./../static/images/University of Houston Logo.png")
 		})
-
-		Context("with a Pixel Scale", func() {
-
+		Context("with a Scale", func() {
 			Context("that is larger than the base image", func() {
 
 				BeforeEach(func() {
@@ -80,7 +31,6 @@ var _ = Describe("ImageScaler", func() {
 				It("should scale up with a horozontal (x) pixel scale and known measuremnt", func() {
 					scale.Line.Start.X = 0
 					scale.Line.End.X = 144
-					scale.Axis = "x"
 					scaledImg, err := NewScale(testImage, scale)
 
 					Ω(err).ShouldNot(HaveOccurred())
@@ -92,7 +42,6 @@ var _ = Describe("ImageScaler", func() {
 				It("should scale up with a vertical (y) pixel scale and known measuremnt", func() {
 					scale.Line.Start.Y = 0
 					scale.Line.End.Y = 144
-					scale.Axis = "y"
 					scaledImg, err := NewScale(testImage, scale)
 
 					Ω(err).ShouldNot(HaveOccurred())
@@ -114,20 +63,18 @@ var _ = Describe("ImageScaler", func() {
 
 				scale.Line.Start.X = 0
 				scale.Line.End.X = 144
-				scale.Axis = "x"
 				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
 
 				xBounds := scaledImg.Bounds().Dx()
-				Ω(xBounds).Should(Equal(97)) // TODO: this is rounding up from 96.5
+				Ω(xBounds).Should(Equal(96)) // TODO: It is not clear what is determineing this rounding
 			})
 
 			It("should scale down with a vertical (y) pixel scale and known measuremnt", func() {
 
 				scale.Line.Start.Y = 0
 				scale.Line.End.Y = 144
-				scale.Axis = "y"
 				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
@@ -142,7 +89,6 @@ var _ = Describe("ImageScaler", func() {
 			BeforeEach(func() {
 				scale = NewTransformation()
 				scale.Length = 4.02305555556
-				scale.Axis = "xy"
 			})
 
 			It("Should work with a downward sloaping line", func() {
@@ -172,5 +118,41 @@ var _ = Describe("ImageScaler", func() {
 			})
 		})
 
+		Context("with bad data", func() {
+
+			BeforeEach(func() {
+				scale = NewTransformation()
+				scale.Length = 0
+				scale.Line.Start.X = 0
+				scale.Line.End.X = 0
+				scale.Line.Start.Y = 0
+				scale.Line.End.Y = 0
+			})
+
+			It("should not change the photo in the x scale", func() {
+
+				_, err := NewScale(testImage, scale)
+
+				Ω(err).To(HaveOccurred())
+
+			})
+
+			It("should return an error", func() {
+
+				_, err := NewScale(testImage, scale)
+
+				Ω(err).To(HaveOccurred())
+			})
+
+			It("should return an error", func() {
+
+				_, err := NewScale(testImage, scale)
+
+				Ω(err).To(HaveOccurred())
+			})
+
+		})
+
 	})
+
 })

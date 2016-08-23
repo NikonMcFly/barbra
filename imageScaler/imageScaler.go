@@ -15,41 +15,13 @@ import (
 func NewScale(img image.Image, scale *Scale) (image.Image, error) {
 
 	if scale.Line.Start.X == 0 && scale.Line.End.X == 0 && scale.Line.Start.Y == 0 && scale.Line.End.Y == 0 {
-		return nil, errors.New("BLO")
+		return nil, errors.New("Please select a refrence line on the image")
 	}
 
 	if scale.isSingleAxis() {
 
-		// if scale.Axis == XAxis {
-		// 	if scale.Pixels().F == 0 {
-		// 		return resize.Resize(uint(got.F), 0, img, resize.Lanczos3), nil
-		// 	}
-
-		// }
-
-		// if scale.Axis == YAxis {
-		// 	if scale.Pixels().F == 0 {
-		// 		return resize.Resize(0, uint(got.F), img, resize.Lanczos3), nil
-		// 	}
-		// }
-
-		// if scale.Pixels().F == 0 {
-
-		// 	// TODO: I should be able to refactor this out
-		// 	c := unit.Converter(Default)
-		// 	got := c.Convert(scale.KnownLength(), unit.Px)
-
-		// 	if scale.getAxis() == XAxis {
-		// 		return resize.Resize(uint(got.F), 0, img, resize.Lanczos3), nil
-		// 	} else if scale.Axis == YAxis {
-		// 		return resize.Resize(0, uint(got.F), img, resize.Lanczos3), nil
-		// 	}
-
-		// }
-
 		if scale.getAxis() == XAxis {
-			wtf := float64(img.Bounds().Dx())
-			xLength := wtf / scale.Mutiplyer()
+			xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
 			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
 		} else if scale.getAxis() == YAxis {
 			yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
