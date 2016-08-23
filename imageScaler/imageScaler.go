@@ -18,10 +18,12 @@ func NewScale(img image.Image, scale *Scale) (image.Image, error) {
 		return nil, errors.New("Please select a refrence line on the image")
 	}
 
-	if scale.isSingleAxis() {
+	if scale.getAxis() != MultiAxis {
+
+		mutiplyer := scale.Mutiplyer()
 
 		if scale.getAxis() == XAxis {
-			xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
+			xLength := float64(img.Bounds().Dx()) / mutiplyer
 			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
 		} else if scale.getAxis() == YAxis {
 			yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()

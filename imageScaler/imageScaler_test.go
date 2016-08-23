@@ -20,35 +20,38 @@ var _ = Describe("ImageScaler", func() {
 		BeforeEach(func() {
 			testImage, _ = GetPng("./../static/images/University of Houston Logo.png")
 		})
-		Context("with a Scale", func() {
-			Context("that is larger than the base image", func() {
+		Context("that is larger than the base image", func() {
 
-				BeforeEach(func() {
-					scale = NewTransformation()
-					scale.Length = 4
-				})
+			BeforeEach(func() {
+				scale = NewTransformation()
+				scale.Length = 4
+			})
 
-				It("should scale up with a horozontal (x) pixel scale and known measuremnt", func() {
-					scale.Line.Start.X = 0
-					scale.Line.End.X = 144
-					scaledImg, err := NewScale(testImage, scale)
+			It("should scale up with a horozontal (x) pixel scale and known measuremnt", func() {
+				scale.Line.Start.X = 0
+				scale.Line.Start.Y = 0
+				scale.Line.End.X = 144
+				scale.Line.End.Y = 0
 
-					Ω(err).ShouldNot(HaveOccurred())
+				scaledImg, err := NewScale(testImage, scale)
 
-					xBounds := scaledImg.Bounds().Dx()
-					Ω(xBounds).Should(Equal(386))
-				})
+				Ω(err).ShouldNot(HaveOccurred())
 
-				It("should scale up with a vertical (y) pixel scale and known measuremnt", func() {
-					scale.Line.Start.Y = 0
-					scale.Line.End.Y = 144
-					scaledImg, err := NewScale(testImage, scale)
+				xBounds := scaledImg.Bounds().Dx()
+				Ω(xBounds).Should(Equal(386))
+			})
 
-					Ω(err).ShouldNot(HaveOccurred())
+			It("should scale up with a vertical (y) pixel scale and known measuremnt", func() {
+				scale.Line.Start.X = 0
+				scale.Line.End.Y = 0
+				scale.Line.Start.Y = 0
+				scale.Line.End.Y = 144
+				scaledImg, err := NewScale(testImage, scale)
 
-					xBounds := scaledImg.Bounds().Dy()
-					Ω(xBounds).Should(Equal(432))
-				})
+				Ω(err).ShouldNot(HaveOccurred())
+
+				xBounds := scaledImg.Bounds().Dy()
+				Ω(xBounds).Should(Equal(432))
 			})
 		})
 
