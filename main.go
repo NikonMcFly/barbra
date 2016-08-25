@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"image/png"
 	"log"
 	"net/http"
@@ -20,9 +21,8 @@ func HealthzHandler(w http.ResponseWriter, r *http.Request) {
 
 // ResizeHandler ...
 func ResizeHandler(w http.ResponseWriter, req *http.Request) {
-
+	fmt.Print("Resizing")
 	scale := imageScaler.NewTransformation()
-	scale.Axis = "x"
 
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&scale)
@@ -31,7 +31,10 @@ func ResizeHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// TODO: Allow user to upload there own image form the static site
-	img, _ := imageScaler.GetPng("./static/images/University of Houston Logo.png")
+	img, err := imageScaler.GetPng("./static/images/University of Houston Logo.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	scaledImg, err := imageScaler.NewScale(img, scale)
 	if err != nil {
@@ -46,6 +49,7 @@ func ResizeHandler(w http.ResponseWriter, req *http.Request) {
 	defer out.Close()
 
 	png.Encode(out, scaledImg)
+	log.Print("...Done")
 }
 
 func main() {

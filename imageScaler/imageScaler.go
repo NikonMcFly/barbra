@@ -4,6 +4,7 @@ import (
 	"errors"
 	"image"
 	"image/png"
+	"math"
 	"os"
 
 	"github.com/nfnt/resize"
@@ -13,30 +14,31 @@ import (
 
 // NewScale ...
 func NewScale(img image.Image, scale *Scale) (image.Image, error) {
-	if scale.Pixels().F == 0 {
 
-		// TODO: I should be able to refactor this out
-		c := unit.Converter(Default)
-		got := c.Convert(scale.KnownLength(), unit.Px)
+	if scale.Line.Start.X == 0 && scale.Line.End.X == 0 && scale.Line.Start.Y == 0 && scale.Line.End.Y == 0 {
+		return nil, errors.New("Please select a refrence line on the image")
+	}
 
-		if scale.Axis == "x" {
-			return resize.Resize(uint(got.F), 0, img, resize.Lanczos3), nil
-		} else if scale.Axis == "y" {
-			return resize.Resize(0, uint(got.F), img, resize.Lanczos3), nil
+	if scale.getAxis() != multiAxis {
+
+		mutiplyer := scale.mutiplyer()
+
+		if scale.getAxis() == xAxis {
+			xLength := float64(img.Bounds().Dx()) / mutiplyer
+			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
+		} else if scale.getAxis() == yAxis {
+			yLength := float64(img.Bounds().Dy()) / scale.mutiplyer()
+			return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
 		}
 
 	} else {
+		// MultiAxis
+		c := unit.Converter(Default)
+		knownlength := c.Convert(scale.knownLength(), unit.Px)
+		mutiplyer := math.Abs(scale.getHypotenusePixels().F / knownlength.F)
+		xLength := float64(img.Bounds().Dx()) / mutiplyer
 
-		// The pixelScale is either in the x or the y axis because it is a vertical or horizontal line
-		// I beleve that we cold handle lines drawn at any angle using the Pythagorean theorem
-
-		if scale.Axis == "x" {
-			xLength := float64(img.Bounds().Dx()) / scale.Mutiplyer()
-			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
-		} else if scale.Axis == "y" {
-			yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
-			return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
-		}
+		return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
 	}
 
 	return nil, errors.New("axis is not supported")
@@ -58,9 +60,9 @@ func GetPng(path string) (image.Image, error) {
 	return img, err
 }
 
-// does not provide a DPI value.
-const DefaultDPI = 72.0
+const defaultDPI = 72.0
 
+// Default ...
 var Default *Theme
 
 // Theme ..
@@ -87,11 +89,11 @@ func (t *Theme) Convert(v unit.Value, to unit.Unit) unit.Value {
 
 // GetDPI returns the theme's DPI, or the default DPI if the field value is
 // zero.
-func (t *Theme) GetDPI() float64 {
+func (t *Theme) getDPI() float64 {
 	if t != nil && t.DPI != 0 {
 		return t.DPI
 	}
-	return DefaultDPI
+	return defaultDPI
 }
 
 // pixelsPer returns the number of pixels in the unit u.
@@ -106,7 +108,7 @@ func (t *Theme) pixelsPer(u unit.Unit) float64 {
 	// case unit.Mm:
 	// 	return t.GetDPI() / unit.MillimetresPerInch
 	case unit.In:
-		return t.GetDPI()
+		return t.getDPI()
 	}
 	// f := t.AcquireFontFace(FontFaceOptions{})
 	// defer t.ReleaseFontFace(FontFaceOptions{}, f)

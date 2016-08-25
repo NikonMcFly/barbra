@@ -16,7 +16,7 @@
     // the line starts before where the mose is positioned.
     // Depending on the zoom and the size of the picture
     // this may need to bo adujusted
-    cnvs.moveTo(startPos.x + 2, startPos.y)
+    cnvs.moveTo(startPos.x + 1, startPos.y)
     cnvs.lineTo(endPos.x, endPos.y)
     cnvs.stroke()
   }
@@ -62,7 +62,6 @@
   })
 
   window.addEventListener('mouseup', function (e) {
-    console.log(startPos, endPos)
     clearCanvas()
     // Replace with var that is second canvas
     line(ctx)
@@ -70,6 +69,12 @@
   })
 
   document.getElementById('resize').addEventListener('click', function () {
+
+    // This is needed because of the hacks needed to get the line to draw in the correct place
+    if (startPos.x < 0) {
+      startPos.x = 0
+    }
+
     var post = {
       length: Number(document.getElementById('length').value),
       line: {
@@ -78,8 +83,10 @@
       }
     }
 
+    console.log(post)
+
     ajax.send('/resize', function () {
-      document.getElementById("myImage").src = './images/resized_University of Houston Logo.png?' + new Date().getTime()
+      document.getElementById('myImage').src = './images/resized_University of Houston Logo.png?' + new Date().getTime()
     }, 'post', JSON.stringify(post))
   }, false)
 
