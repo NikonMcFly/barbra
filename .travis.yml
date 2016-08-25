@@ -1,10 +1,14 @@
 langualge: go
 
 go: 
+  - 1.7
   - tip
 
-install:
+before_install:
+  - go get github.com/pieperz/barbra
   - go get github.com/tools/godep
+
+install:
   - godep restore
 
 script:
