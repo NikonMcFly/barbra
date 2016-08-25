@@ -21,72 +21,97 @@ var _ = Describe("ImageScaler", func() {
 			testImage, _ = GetPng("./../static/images/University of Houston Logo.png")
 			scale = NewTransformation()
 		})
-		Context("that is larger than the base image", func() {
 
-			It("should scale up with a horozontal (x) pixel scale and known measuremnt", func() {
-				scale.Length = 4
-				scale.Line.Start.X = 0
-				scale.Line.Start.Y = 0
-				scale.Line.End.X = 144
-				scale.Line.End.Y = 0
+		It("should scale up with a horozontal (x)", func() {
+			scale.Length = 4
+			scale.Line.Start.X = 0
+			scale.Line.Start.Y = 0
+			scale.Line.End.X = 144
+			scale.Line.End.Y = 0
 
-				scaledImg, err := NewScale(testImage, scale)
+			scaledImg, err := NewScale(testImage, scale)
 
-				Ω(err).ShouldNot(HaveOccurred())
+			Ω(err).ShouldNot(HaveOccurred())
 
-				xBounds := scaledImg.Bounds().Dx()
-				Ω(xBounds).Should(Equal(386))
-			})
-
-			It("should scale up with a vertical (y) pixel scale and known measuremnt", func() {
-				scale.Length = 4
-				scale.Line.Start.X = 0
-				scale.Line.End.Y = 0
-				scale.Line.Start.Y = 0
-				scale.Line.End.Y = 144
-				scaledImg, err := NewScale(testImage, scale)
-
-				Ω(err).ShouldNot(HaveOccurred())
-
-				xBounds := scaledImg.Bounds().Dy()
-				Ω(xBounds).Should(Equal(432))
-			})
+			xBounds := scaledImg.Bounds().Dx()
+			Ω(xBounds).Should(Equal(386))
 		})
 
-		Context("that is smaller than the base image", func() {
+		It("should scale up with a horzontal (x) that needs to round by 1 px", func() {
+			scale.Length = 4
+			scale.Line.Start.X = 0
+			scale.Line.End.X = 143
+			scale.Line.Start.Y = 0
+			scale.Line.End.Y = 0
 
-			It("should scale down with a horozontal (x) pixel scale and known measuremnt", func() {
-				scale.Length = 1
-				scale.Line.Start.X = 0
-				scale.Line.End.X = 144
-				scale.Line.Start.Y = 0
-				scale.Line.End.Y = 0
-				scaledImg, err := NewScale(testImage, scale)
+			scaledImg, err := NewScale(testImage, scale)
 
-				Ω(err).ShouldNot(HaveOccurred())
+			Ω(err).ShouldNot(HaveOccurred())
 
-				xBounds := scaledImg.Bounds().Dx()
-				Ω(xBounds).Should(Equal(96)) // TODO: It is not clear what is determineing this rounding
-			})
+			Ω(scaledImg.Bounds().Dx()).Should(Equal(388))
 
-			It("should scale down with a vertical (y) pixel scale and known measuremnt", func() {
-				scale.Length = 1
-				scale.Line.Start.X = 0
-				scale.Line.End.X = 0
-				scale.Line.Start.Y = 0
-				scale.Line.End.Y = 144
-				scaledImg, err := NewScale(testImage, scale)
-
-				Ω(err).ShouldNot(HaveOccurred())
-
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(108))
-
-			})
 		})
 
-		Context("when scale line is not perpendicular or parellel to the X or Y axis", func() {
+		It("should scale up with a vertical (y)", func() {
+			scale.Length = 4
+			scale.Line.Start.X = 0
+			scale.Line.End.Y = 0
+			scale.Line.Start.Y = 0
+			scale.Line.End.Y = 144
+			scaledImg, err := NewScale(testImage, scale)
 
-			It("Should work with a downward sloaping line", func() {
+			Ω(err).ShouldNot(HaveOccurred())
+
+			xBounds := scaledImg.Bounds().Dy()
+			Ω(xBounds).Should(Equal(432))
+		})
+
+		It("should scale up with a vertical (y) that needs to round by 1px", func() {
+			scale.Length = 4
+			scale.Line.Start.X = 0
+			scale.Line.End.X = 0
+			scale.Line.Start.Y = 0
+			scale.Line.End.Y = 143
+
+			scaledImg, err := NewScale(testImage, scale)
+
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(scaledImg.Bounds().Dy()).Should(Equal(435))
+
+		})
+
+		It("should scale down with a horozontal (x)", func() {
+			scale.Length = 1
+			scale.Line.Start.X = 0
+			scale.Line.End.X = 144
+			scale.Line.Start.Y = 0
+			scale.Line.End.Y = 0
+			scaledImg, err := NewScale(testImage, scale)
+
+			Ω(err).ShouldNot(HaveOccurred())
+
+			xBounds := scaledImg.Bounds().Dx()
+			Ω(xBounds).Should(Equal(96)) // TODO: It is not clear what is determineing this rounding
+		})
+
+		It("should scale down with a vertical (y)", func() {
+			scale.Length = 1
+			scale.Line.Start.X = 0
+			scale.Line.End.X = 0
+			scale.Line.Start.Y = 0
+			scale.Line.End.Y = 144
+			scaledImg, err := NewScale(testImage, scale)
+
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(scaledImg.Bounds().Dy()).Should(Equal(108))
+
+		})
+
+		Context("when the scale line is not perpendicular or parellel to the X or Y axis", func() {
+
+			It("should work with a downward sloaping line", func() {
 				scale.Length = 4.02305555556
 				scale.Line.Start.X = 0
 				scale.Line.Start.Y = 0
@@ -99,7 +124,36 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(scaledImg.Bounds().Dx()).Should(Equal(192))
 			})
-			It("Should work with a downward sloaping line", func() {
+
+			It("should work with a downward sloapinrg line that needs to round", func() {
+				scale.Length = 4
+				scale.Line.Start.X = 192
+				scale.Line.End.X = 49
+				scale.Line.Start.Y = 61
+				scale.Line.End.Y = 63
+
+				scaledImg, err := NewScale(testImage, scale)
+
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(scaledImg.Bounds().Dy()).Should(Equal(434))
+
+			})
+			It("should work with a downward sloaping line that needs to round", func() {
+				scale.Length = 4
+				scale.Line.Start.X = 192
+				scale.Line.End.X = 49
+				scale.Line.Start.Y = 63
+				scale.Line.End.Y = 61
+
+				scaledImg, err := NewScale(testImage, scale)
+
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(scaledImg.Bounds().Dy()).Should(Equal(434))
+
+			})
+			It("should scale up with downward sloaping line", func() {
 				scale.Length = 8.046111
 				scale.Line.Start.X = 0
 				scale.Line.Start.Y = 0
@@ -113,7 +167,7 @@ var _ = Describe("ImageScaler", func() {
 				Ω(scaledImg.Bounds().Dx()).Should(Equal(385))
 			})
 
-			It("Should work with a upward sloaping line", func() {
+			It("should work with a upward sloaping line", func() {
 				scale.Length = 4.02305555556
 				scale.Line.Start.X = 0
 				scale.Line.Start.Y = 216
@@ -126,40 +180,22 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(scaledImg.Bounds().Dy()).Should(Equal(215))
 			})
-		})
 
-		Context("with bearly off measuerments", func() {
-			It("should accept measurments that close to even pixels ", func() {
-				scale.Length = 4
+			It("should scale up with a upward sloaping line", func() {
+				scale.Length = 8.046111
 				scale.Line.Start.X = 0
-				scale.Line.End.X = 143
-				scale.Line.Start.Y = 0
+				scale.Line.Start.Y = 216
+				scale.Line.End.X = 193
 				scale.Line.End.Y = 0
 
 				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dx()).Should(Equal(388))
-
+				Ω(scaledImg.Bounds().Dy()).Should(Equal(431))
 			})
 
-			It("should accept measurments that close even", func() {
-				scale.Length = 4
-				scale.Line.Start.X = 0
-				scale.Line.End.X = 0
-				scale.Line.Start.Y = 0
-				scale.Line.End.Y = 143
-
-				scaledImg, err := NewScale(testImage, scale)
-
-				Ω(err).ShouldNot(HaveOccurred())
-
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(435))
-
-			})
-
-			It("1should accept measurments that close but not == ", func() {
+			It("should scale up with a upward sloaping line that rounds", func() {
 				scale.Length = 4
 				scale.Line.Start.X = 49
 				scale.Line.End.X = 192
@@ -173,7 +209,7 @@ var _ = Describe("ImageScaler", func() {
 				Ω(scaledImg.Bounds().Dx()).Should(Equal(388))
 
 			})
-			It("4should accept measurments that close but not == ", func() {
+			It("should scale up with a downward sloaping line that rounds", func() {
 				scale.Length = 4
 				scale.Line.Start.X = 49
 				scale.Line.End.X = 192
@@ -187,37 +223,7 @@ var _ = Describe("ImageScaler", func() {
 				Ω(scaledImg.Bounds().Dx()).Should(Equal(388))
 
 			})
-			It("5should accept measurments that close but not == ", func() {
-				scale.Length = 4
-				scale.Line.Start.X = 192
-				scale.Line.End.X = 49
-				scale.Line.Start.Y = 61
-				scale.Line.End.Y = 63
-
-				scaledImg, err := NewScale(testImage, scale)
-
-				Ω(err).ShouldNot(HaveOccurred())
-
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(434))
-
-			})
-			It("should accept x measurments that close but not == ", func() {
-				scale.Length = 4
-				scale.Line.Start.X = 192
-				scale.Line.End.X = 49
-				scale.Line.Start.Y = 63
-				scale.Line.End.Y = 61
-
-				scaledImg, err := NewScale(testImage, scale)
-
-				Ω(err).ShouldNot(HaveOccurred())
-
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(434))
-
-			})
-
 		})
-
 		Context("with bad data", func() {
 
 			BeforeEach(func() {
