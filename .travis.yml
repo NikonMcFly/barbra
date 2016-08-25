@@ -5,9 +5,7 @@ go:
 
 before_install:
  - go get github.com/tools/godep
- - go get -v github.com/onsi/ginkgo/ginkgo
- - go get -v github.com/onsi/gomega
- 
+
 install:
  - godep restore
- - ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --compilers=2
+ - ginkgo ginkgo -r --failOnPending --cover --trace --race --compilers=2
