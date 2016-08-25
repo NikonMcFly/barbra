@@ -2,10 +2,6 @@ language: go
 
 go: 
   - tip
-
-before-install:
-  - go get github.com/tools/godep
-
+  
 script:
-  - godep restore
-  - ginkgo -r
+  - go test -v ./...
