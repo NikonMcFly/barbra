@@ -59,6 +59,8 @@ var _ = Describe("ImageScaler", func() {
 				scale.Length = 1
 				scale.Line.Start.X = 0
 				scale.Line.End.X = 144
+				scale.Line.Start.Y = 0
+				scale.Line.End.Y = 0
 				scaledImg, err := NewScale(testImage, scale)
 
 				Ω(err).ShouldNot(HaveOccurred())
@@ -69,6 +71,8 @@ var _ = Describe("ImageScaler", func() {
 
 			It("should scale down with a vertical (y) pixel scale and known measuremnt", func() {
 				scale.Length = 1
+				scale.Line.Start.X = 0
+				scale.Line.End.X = 0
 				scale.Line.Start.Y = 0
 				scale.Line.End.Y = 144
 				scaledImg, err := NewScale(testImage, scale)
@@ -93,7 +97,20 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dx()).Should(Equal(193))
+				Ω(scaledImg.Bounds().Dx()).Should(Equal(192))
+			})
+			It("Should work with a downward sloaping line", func() {
+				scale.Length = 8.046111
+				scale.Line.Start.X = 0
+				scale.Line.Start.Y = 0
+				scale.Line.End.X = 193
+				scale.Line.End.Y = 216
+
+				scaledImg, err := NewScale(testImage, scale)
+
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(scaledImg.Bounds().Dx()).Should(Equal(385))
 			})
 
 			It("Should work with a upward sloaping line", func() {
@@ -107,12 +124,12 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(216))
+				Ω(scaledImg.Bounds().Dy()).Should(Equal(215))
 			})
 		})
 
 		Context("with bearly off measuerments", func() {
-			It("should accept measurments that close but not == ", func() {
+			It("should accept measurments that close to even pixels ", func() {
 				scale.Length = 4
 				scale.Line.Start.X = 0
 				scale.Line.End.X = 143
@@ -123,11 +140,11 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(432))
+				Ω(scaledImg.Bounds().Dx()).Should(Equal(388))
 
 			})
 
-			It("should accept measurments that close but not == ", func() {
+			It("should accept measurments that close even", func() {
 				scale.Length = 4
 				scale.Line.Start.X = 0
 				scale.Line.End.X = 0
@@ -138,11 +155,11 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(432))
+				Ω(scaledImg.Bounds().Dy()).Should(Equal(435))
 
 			})
 
-			It("should accept measurments that close but not == ", func() {
+			It("1should accept measurments that close but not == ", func() {
 				scale.Length = 4
 				scale.Line.Start.X = 49
 				scale.Line.End.X = 192
@@ -153,10 +170,10 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(432))
+				Ω(scaledImg.Bounds().Dx()).Should(Equal(388))
 
 			})
-			It("should accept measurments that close but not == ", func() {
+			It("4should accept measurments that close but not == ", func() {
 				scale.Length = 4
 				scale.Line.Start.X = 49
 				scale.Line.End.X = 192
@@ -167,10 +184,10 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(432))
+				Ω(scaledImg.Bounds().Dx()).Should(Equal(388))
 
 			})
-			It("should accept measurments that close but not == ", func() {
+			It("5should accept measurments that close but not == ", func() {
 				scale.Length = 4
 				scale.Line.Start.X = 192
 				scale.Line.End.X = 49
@@ -181,7 +198,7 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(432))
+				Ω(scaledImg.Bounds().Dy()).Should(Equal(434))
 
 			})
 			It("should accept x measurments that close but not == ", func() {
@@ -195,7 +212,7 @@ var _ = Describe("ImageScaler", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 
-				Ω(scaledImg.Bounds().Dy()).Should(Equal(432))
+				Ω(scaledImg.Bounds().Dy()).Should(Equal(434))
 
 			})
 

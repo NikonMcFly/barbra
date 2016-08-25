@@ -11,7 +11,7 @@ const (
 	XAxis = "x"
 	// YAxis ...
 	YAxis = "y"
-	// MultiAxis
+	// MultiAxisi ...
 	MultiAxis = "xy"
 )
 
@@ -115,5 +115,7 @@ func (s *Scale) getHypotenusePixels() unit.Value {
 
 	hypotenuse := math.Sqrt(x2Minusx1Squared + y2Minusy1Squared)
 
-	return unit.Pixels(hypotenuse)
+	absHypot := math.Abs(hypotenuse)
+
+	return unit.Pixels(absHypot)
 }

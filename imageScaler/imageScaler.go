@@ -4,6 +4,7 @@ import (
 	"errors"
 	"image"
 	"image/png"
+	"math"
 	"os"
 
 	"github.com/nfnt/resize"
@@ -32,9 +33,11 @@ func NewScale(img image.Image, scale *Scale) (image.Image, error) {
 
 	} else {
 		// MultiAxis
-		xyMultiplyer := scale.getHypotenusePixels().F / float64(img.Bounds().Dx())
-		hypot := scale.getHypotenusePixels()
-		xLength := hypot.F / xyMultiplyer
+		c := unit.Converter(Default)
+		knownlength := c.Convert(scale.KnownLength(), unit.Px)
+		mutiplyer := math.Abs(scale.getHypotenusePixels().F / knownlength.F)
+		xLength := float64(img.Bounds().Dx()) / mutiplyer
+
 		return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
 	}
 
@@ -57,9 +60,10 @@ func GetPng(path string) (image.Image, error) {
 	return img, err
 }
 
-// does not provide a DPI value.
+// DefaultDPI does not provide a DPI value.
 const DefaultDPI = 72.0
 
+// Default ...
 var Default *Theme
 
 // Theme ..
