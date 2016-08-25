@@ -8,3 +8,4 @@ before_install:
 
 install:
  - godep restore
+ - ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --compilers=2
