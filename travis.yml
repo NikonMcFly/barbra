@@ -1,0 +1,12 @@
+langualge: go
+
+go: 
+  - tip
+
+install:
+  - export PATH=$PATH:$HOME/gopath/bin
+  - go get github.com/tools/godep
+  - godep restore
+
+script:
+  - ginkgo -r
