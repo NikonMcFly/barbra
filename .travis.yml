@@ -4,6 +4,6 @@ go:
   - 1.7
   - tip
 
-sript:
+script:
   - godep restore
-  - go test
+  - ginkgo -r
