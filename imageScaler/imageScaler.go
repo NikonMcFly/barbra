@@ -19,22 +19,22 @@ func NewScale(img image.Image, scale *Scale) (image.Image, error) {
 		return nil, errors.New("Please select a refrence line on the image")
 	}
 
-	if scale.getAxis() != MultiAxis {
+	if scale.getAxis() != multiAxis {
 
-		mutiplyer := scale.Mutiplyer()
+		mutiplyer := scale.mutiplyer()
 
-		if scale.getAxis() == XAxis {
+		if scale.getAxis() == xAxis {
 			xLength := float64(img.Bounds().Dx()) / mutiplyer
 			return resize.Resize(uint(xLength), 0, img, resize.Lanczos3), nil
-		} else if scale.getAxis() == YAxis {
-			yLength := float64(img.Bounds().Dy()) / scale.Mutiplyer()
+		} else if scale.getAxis() == yAxis {
+			yLength := float64(img.Bounds().Dy()) / scale.mutiplyer()
 			return resize.Resize(0, uint(yLength), img, resize.Lanczos3), nil
 		}
 
 	} else {
 		// MultiAxis
 		c := unit.Converter(Default)
-		knownlength := c.Convert(scale.KnownLength(), unit.Px)
+		knownlength := c.Convert(scale.knownLength(), unit.Px)
 		mutiplyer := math.Abs(scale.getHypotenusePixels().F / knownlength.F)
 		xLength := float64(img.Bounds().Dx()) / mutiplyer
 
@@ -60,8 +60,7 @@ func GetPng(path string) (image.Image, error) {
 	return img, err
 }
 
-// DefaultDPI does not provide a DPI value.
-const DefaultDPI = 72.0
+const defaultDPI = 72.0
 
 // Default ...
 var Default *Theme
@@ -90,11 +89,11 @@ func (t *Theme) Convert(v unit.Value, to unit.Unit) unit.Value {
 
 // GetDPI returns the theme's DPI, or the default DPI if the field value is
 // zero.
-func (t *Theme) GetDPI() float64 {
+func (t *Theme) getDPI() float64 {
 	if t != nil && t.DPI != 0 {
 		return t.DPI
 	}
-	return DefaultDPI
+	return defaultDPI
 }
 
 // pixelsPer returns the number of pixels in the unit u.
@@ -109,7 +108,7 @@ func (t *Theme) pixelsPer(u unit.Unit) float64 {
 	// case unit.Mm:
 	// 	return t.GetDPI() / unit.MillimetresPerInch
 	case unit.In:
-		return t.GetDPI()
+		return t.getDPI()
 	}
 	// f := t.AcquireFontFace(FontFaceOptions{})
 	// defer t.ReleaseFontFace(FontFaceOptions{}, f)

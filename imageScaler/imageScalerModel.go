@@ -7,12 +7,9 @@ import (
 )
 
 const (
-	// XAxis ...
-	XAxis = "x"
-	// YAxis ...
-	YAxis = "y"
-	// MultiAxisi ...
-	MultiAxis = "xy"
+	xAxis     = "x"
+	yAxis     = "y"
+	multiAxis = "xy"
 )
 
 type point struct {
@@ -53,23 +50,21 @@ func NewTransformation() *Scale {
 	}
 }
 
-// Mutiplyer ...
-func (s *Scale) Mutiplyer() float64 {
+func (s *Scale) mutiplyer() float64 {
 
 	c := unit.Converter(Default)
-	knownPixelLength := c.Convert(s.KnownLength(), unit.Px)
+	knownPixelLength := c.Convert(s.knownLength(), unit.Px)
 
-	if s.Pixels().F == 0 {
+	if s.pixels().F == 0 {
 		return 1
 	}
 
-	return s.Pixels().F / knownPixelLength.F
+	return s.pixels().F / knownPixelLength.F
 }
 
-// Pixels  returns the end point of the line
-func (s *Scale) Pixels() unit.Value {
+func (s *Scale) pixels() unit.Value {
 
-	if s.getAxis() == XAxis || s.getAxis() == MultiAxis {
+	if s.getAxis() == xAxis || s.getAxis() == multiAxis {
 		return unit.Pixels(s.Line.End.X - s.Line.Start.X)
 	}
 
@@ -77,14 +72,13 @@ func (s *Scale) Pixels() unit.Value {
 
 }
 
-// KnownLength returns known length of the Li
-func (s *Scale) KnownLength() unit.Value {
+func (s *Scale) knownLength() unit.Value {
 
 	return unit.Inches(s.Length)
 }
 
 func (s *Scale) isSingleAxis() bool {
-	if s.getAxis() == MultiAxis {
+	if s.getAxis() == multiAxis {
 		return false
 	}
 	return true
@@ -93,14 +87,14 @@ func (s *Scale) isSingleAxis() bool {
 func (s *Scale) getAxis() string {
 
 	if s.Line.Start.Y == s.Line.End.Y {
-		return XAxis
+		return xAxis
 	}
 
 	if s.Line.Start.X == s.Line.End.X {
-		return YAxis
+		return yAxis
 	}
 
-	return MultiAxis
+	return multiAxis
 }
 
 func (s *Scale) getHypotenusePixels() unit.Value {
