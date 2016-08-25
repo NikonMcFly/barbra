@@ -4,8 +4,6 @@ go:
   - 1.7
   - tip
 
-sudo: required
-
 sript:
   - godep restore
-  - ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --compilers=2
+  - go test
