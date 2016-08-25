@@ -4,5 +4,9 @@ go:
   - 1.7
   - tip
 
+before-install:
+  - go get -v github.com/onsi/ginkgo/ginkgo
+  - go get -v github.com/onsi/gomega
+  
 script:
   - ginkgo -r
