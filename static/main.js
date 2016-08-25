@@ -71,7 +71,7 @@
   document.getElementById('resize').addEventListener('click', function () {
 
     // This is needed because of the hacks needed to get the line to draw in the correct place
-    if (startPos.x < 0 ) {
+    if (startPos.x < 0) {
       startPos.x = 0
     }
 
@@ -86,7 +86,7 @@
     console.log(post)
 
     ajax.send('/resize', function () {
-      document.getElementById("myImage").src = './images/resized_University of Houston Logo.png?' + new Date().getTime()
+      document.getElementById('myImage').src = './images/resized_University of Houston Logo.png?' + new Date().getTime()
     }, 'post', JSON.stringify(post))
   }, false)
 
