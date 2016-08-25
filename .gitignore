@@ -11,3 +11,5 @@ static/images/resized*
 
 *coverage.out
 *.coverprofile
+
+tmp
