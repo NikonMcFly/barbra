@@ -5,7 +5,6 @@ go:
   - tip
 
 before_install:
-  - go get github.com/pieperz/barbra
   - go get github.com/tools/godep
 
 install:
